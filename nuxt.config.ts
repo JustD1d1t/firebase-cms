@@ -3,5 +3,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   extends: ['@nuxt/ui-pro'],
   modules: ["@nuxt/ui"],
+  plugins: ["~/plugins/firebase"],
   compatibilityDate: "2024-07-08"
 })

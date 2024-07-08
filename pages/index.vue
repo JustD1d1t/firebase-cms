@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { addDocument } = useFirebase();
 const links = [{
     label: 'Home',
     icon: 'i-heroicons-home'
@@ -23,10 +24,10 @@ const links = [{
 </script>
 <template>
     <UDashboardLayout>
-        <UDashboardPanel :width="250" >
+        <UDashboardPanel :width="250">
             <UDashboardNavbar>
                 <template #left>
-                    <Logo class="w-auto h-5" />
+                    <h2>logo</h2>
                 </template>
             </UDashboardNavbar>
 
