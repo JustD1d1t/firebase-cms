@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   extends: ['@nuxt/ui-pro'],
-  modules: ["@nuxt/ui", "nuxt-tiptap-editor", "@nuxtjs/tailwindcss"],
+  modules: ["@nuxt/ui", "nuxt-tiptap-editor", "@nuxtjs/tailwindcss", 'nuxt-icons'],
   plugins: ["~/plugins/firebase"],
   css: ["@/assets/scss/main.scss"],
   compatibilityDate: "2024-07-08",

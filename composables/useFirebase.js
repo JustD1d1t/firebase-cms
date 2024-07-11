@@ -41,6 +41,18 @@ import {
       throw error;
     }
   };
+
+  const saveFile = async (collectionName, file) => {
+    console.log(file)
+    try {
+      const storage = getStorage();
+      const storageRef = storRef(storage, `${collectionName}/${file.name}`);
+      await uploadBytes(storageRef, file);
+    } catch (error) {
+      console.error("Error saving photo and document:", error);
+      throw error;
+    }
+  }
   
   const savePhotoToStorageWithId = async (
     collectionName,
@@ -191,6 +203,7 @@ import {
       savePhotoToStorageWithId,
       getPhotoById,
       removePhotoFromStorage,
+      saveFile,
       savePhotoStringToStorageWithId,
     };
   };

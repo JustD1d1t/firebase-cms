@@ -1,19 +1,13 @@
-<script setup lang="ts">
+<script setup>
 const { logoutUser } = useFirebaseAuth();
 const editor = useEditor({
     content: "<p>I'm running Tiptap with Vue.js. 🎉</p>",
     extensions: [TiptapStarterKit],
 });
 const links = [{
-    label: 'Home',
-    icon: 'i-heroicons-home'
-}, {
-    label: 'Inbox',
-    icon: 'i-heroicons-inbox',
-    badge: '4'
-}, {
-    label: 'Users',
-    icon: 'i-heroicons-user-group'
+    label: 'Publikacje',
+    icon: 'i-heroicons-newspaper',
+    to: '/releases'
 }, {
     label: 'logout',
     icon: 'i-heroicons-user-group',
