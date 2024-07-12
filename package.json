@@ -21,8 +21,10 @@
   },
   "dependencies": {
     "@nuxt/ui-pro": "^1.3.1",
+    "@pinia/nuxt": "^0.5.1",
     "@tiptap/extension-text-align": "^2.4.0",
     "nuxt-icons": "^3.2.1",
+    "pinia": "^2.1.7",
     "yup": "^1.4.0"
   }
 }

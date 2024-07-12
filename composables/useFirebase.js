@@ -25,6 +25,7 @@ import {
     uploadBytes,
     uploadString,
     getDownloadURL,
+    listAll
   } from "firebase/storage";
   
   const savePhotoStringToStorageWithId = async (
@@ -43,15 +44,39 @@ import {
   };
 
   const saveFile = async (collectionName, file) => {
-    console.log(file)
     try {
       const storage = getStorage();
       const storageRef = storRef(storage, `${collectionName}/${file.name}`);
-      await uploadBytes(storageRef, file);
+      const res = await uploadBytes(storageRef, file);
+      return res;
     } catch (error) {
       console.error("Error saving photo and document:", error);
       throw error;
     }
+  }
+
+  const getFiles = async(collectionName) => {
+    const storage = getStorage();
+    const listRef = storRef(storage, collectionName);
+    const res = await listAll(listRef);
+    return res.items;
+  }
+
+  const getFilesWithUrl = async(collectionName) => {
+    const storage = getStorage();
+    const listRef = storRef(storage, collectionName);
+    const res = await listAll(listRef);
+    
+    // Map items to an array of promises
+    const filePromises = res.items.map(async (itemRef) => {
+      const url = await getDownloadURL(itemRef);
+      return { url, item: itemRef };
+    });
+    
+    // Wait for all promises to resolve
+    const files = await Promise.all(filePromises);
+    
+    return files;
   }
   
   const savePhotoToStorageWithId = async (
@@ -94,6 +119,17 @@ import {
       return undefined;
     }
   };
+
+  const removeFileFromStorage = async (collection, fileId) => {
+    const storage = getStorage();
+    try {
+      const desertRef = storRef(storage, `${collection}/${fileId}`);
+      deleteObject(desertRef);
+    } catch (error) {
+      console.error("Error removing file from storage:", error);
+      throw error;
+    }
+  }
   
   const removePhotoFromStorage = async (collection, photoId) => {
     const storage = getStorage();
@@ -193,6 +229,8 @@ import {
       addDocument,
       clearSnapshot,
       deleteDocument,
+      getFiles,
+      getFilesWithUrl,
       onSnapshotCollection,
       onSnapshotDoc,
       queryDoc,
@@ -203,6 +241,7 @@ import {
       savePhotoToStorageWithId,
       getPhotoById,
       removePhotoFromStorage,
+      removeFileFromStorage,
       saveFile,
       savePhotoStringToStorageWithId,
     };

@@ -1,24 +1,37 @@
 <script setup>
-import TextAlign from '@tiptap/extension-text-align'
-const emit = defineEmits(['update:modelValue'])
+import { onMounted, watch } from 'vue';
+import { useEditor } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit';
+import TextAlign from '@tiptap/extension-text-align';
+
+const emit = defineEmits(['update:modelValue']);
+const props = defineProps(['modelValue']);
 
 const editor = useEditor({
-    content: "<p>I'm running Tiptap with Vue.js. 🎉</p>",
     extensions: [
-        TiptapStarterKit,
-        TiptapBold,
-        TiptapItalic,
-        TiptapLink,
+        StarterKit,
         TextAlign.configure({
             types: ['heading', 'paragraph'],
         }),
     ],
-    onUpdate: ({editor}) => {
-        emit('update:modelValue', editor.getHTML())
+    content: props.modelValue,
+    onUpdate: ({ editor }) => {
+        emit('update:modelValue', editor.getHTML());
+    },
+});
+
+onMounted(() => {
+    if (props.modelValue && editor.value) {
+        editor.value.commands.setContent(props.modelValue);
+    }
+});
+
+watch(() => props.modelValue, (newValue) => {
+    if (newValue !== editor.value.getHTML()) {
+        editor.value.commands.setContent(newValue);
     }
 });
 </script>
-
 <template>
     <div v-if="editor" class="container tiptap">
         <div class="control-group">
