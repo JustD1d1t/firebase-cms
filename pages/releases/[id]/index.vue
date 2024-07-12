@@ -9,6 +9,7 @@ const router = useRouter();
 
 const attachmentsStore = useAttachmentsStore();
 const { removeAttachments, setAttachments } = attachmentsStore;
+const isLoading = ref(false);
 
 const attachments = computed(() => attachmentsStore.getAttachments);
 
@@ -44,16 +45,19 @@ const closeModal = () => {
 }
 
 onMounted(async () => {
+    isLoading.value = true;
     const response = await queryDoc(['users', auth.currentUser.uid, 'releases'], route.params.id)
     state.title = response.title;
     state.content = response.content;
     const files = await getFilesWithUrl(`releases/${auth.currentUser.uid}/${route.params.id}`);
     setAttachments(files)
+    isLoading.value = false;
 })
 </script>
 
 <template>
-    <UContainer class="flex justify-center h-screen w-full">
+    <UiLoadingspinner v-if="isLoading" />
+    <UContainer class="flex justify-center h-screen w-full" v-else>
         <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
             <UFormGroup label="Tytuł" name="title" required>
                 <UInput v-model="state.title" />

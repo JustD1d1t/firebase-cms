@@ -24,7 +24,8 @@ onMounted(async () => {
 </script>
 
 <template>
-    <UContainer class="flex flex-col items-start h-screen w-full">
+    <UiLoadingspinner v-if="!releases.length" />
+    <UContainer class="flex flex-col items-start h-screen w-full" v-else>
         <UButton color="green" variant="solid" class="mb-6" to="/releases/new">Dodaj nową</UButton>
         <UBlogList v-if="releases.length" orientation="vertical" class="relative group flex flex-col w-full gap-y-6">
             <UBlogPost v-for="release in releases" :key="release.id" :title="release.title"
