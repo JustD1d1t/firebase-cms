@@ -2,16 +2,16 @@
 import { object, string } from 'yup';
 import { getAuth } from 'firebase/auth';
 const auth = getAuth();
-const { addDocument, saveFile } = useFirebase();
 import { useReleaseStore } from '~/stores/release'
 import { useAttachmentsStore } from '~/stores/attachments'
 const router = useRouter();
-
+const { addRelease } = useReleases();
 const attachmentsStore = useAttachmentsStore();
-const { addAttachments } = attachmentsStore;
+const { addAttachmentsToStore } = attachmentsStore;
+const { addAttachments } = useAttachments();
 
 const releaseStore = useReleaseStore();
-const { addRelease } = releaseStore;
+const { addReleaseToStore } = releaseStore;
 
 const schema = object({
     title: string().required('Required'),
@@ -25,21 +25,19 @@ const state = reactive({
 })
 
 async function onSubmit(event) {
-    const addDocumentResponse = await addDocument(['users', auth.currentUser.uid, 'releases'], {
-        content: event.data.content,
-        title: event.data.title
+    const data = await addRelease({
+        title: state.title,
+        content: state.content
     })
-    addRelease({
-        id: addDocumentResponse.id,
+    addReleaseToStore({
+        id: data.id,
         content: event.data.content,
         title: event.data.title
     })
 
-    Array.from(files.value).forEach(file => {
-        saveFile(`releases/${auth.currentUser.uid}/${addDocumentResponse.id}`, file)
-    })
+    await addAttachments(files.value, data.id);
 
-    addAttachments(files.value);
+    addAttachmentsToStore(files.value);
     router.back();
 }
 
@@ -49,7 +47,7 @@ const handleFiles = (e) => {
 </script>
 
 <template>
-    <UContainer class="flex justify-center h-screen w-full">
+    <UContainer class="flex justify-center  w-full">
         <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
             <UFormGroup label="Tytuł" name="title" required>
                 <UInput v-model="state.title" />

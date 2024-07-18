@@ -131,6 +131,10 @@ watch(() => props.modelValue, (newValue) => {
 
 <style lang="scss" scoped>
 .tiptap {
+    ::v-deep .ProseMirror {
+        height: 100%;
+    }
+
     .button-group {
         display: flex;
         flex-wrap: wrap;

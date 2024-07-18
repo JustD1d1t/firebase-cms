@@ -8,22 +8,25 @@ export const useReleaseStore = defineStore({
       }
     },
     actions: {
-      addRelease(release) {
+      addReleaseToStore(release) {
         this.releases.push(release)
       },
-      addReleases(releases) {
+      addReleasesToStore(releases) {
         this.releases = [...releases]
       },
-      updateRelease(release) {
+      updateReleaseToStore(release) {
         const index = this.releases.findIndex(r => r.id === release.id)
         this.releases[index] = release
+      },
+      deleteReleaseFromStore(id) {
+        this.releases = this.releases.filter(r => r.id !== id)
       }
     },
     getters: {
-      getReleaseById(id) {
+      getReleaseByIdFromStore(id) {
         return this.releases.find(r => r.id === id)
       },
-      getReleases() {
+      getReleasesFromStore() {
         return this.releases
       }
     }

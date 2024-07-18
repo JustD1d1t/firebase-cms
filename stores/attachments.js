@@ -8,21 +8,21 @@ export const useAttachmentsStore = defineStore({
       }
     },
     actions: {
-      addAttachments(attachments) {
+      addAttachmentsToStore(attachments) {
         this.attachments = [...this.attachments, ...attachments]
       },
-      setAttachments(attachments) {
+      setAttachmentsToStore(attachments) {
         this.attachments = attachments
       },
-      removeAttachment(attachment) {
+      removeAttachmentFromStore(attachment) {
         this.attachments = this.attachments.filter((att) => att !== attachment)
       },
-      removeAttachments() {
+      removeAttachmentsFromStore() {
         this.attachments = []
       }
     },
     getters: {
-      getAttachments() {
+      getAttachmentsFromStore() {
         return this.attachments
       }
     }

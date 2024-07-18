@@ -4,7 +4,7 @@ import {
     deleteDoc,
     doc,
     getDoc,
-    getDocs,
+    getDocs, 
     getFirestore,
     query,
     setDoc,
@@ -25,7 +25,8 @@ import {
     uploadBytes,
     uploadString,
     getDownloadURL,
-    listAll
+    listAll,
+    getMetadata,   
   } from "firebase/storage";
   
   const savePhotoStringToStorageWithId = async (
@@ -43,11 +44,11 @@ import {
     }
   };
 
-  const saveFile = async (collectionName, file) => {
+  const saveFile = async (collectionName, file, metadata = {}) => {
     try {
       const storage = getStorage();
       const storageRef = storRef(storage, `${collectionName}/${file.name}`);
-      const res = await uploadBytes(storageRef, file);
+      const res = await uploadBytes(storageRef, file, { customMetadata: metadata });
       return res;
     } catch (error) {
       console.error("Error saving photo and document:", error);
@@ -70,7 +71,8 @@ import {
     // Map items to an array of promises
     const filePromises = res.items.map(async (itemRef) => {
       const url = await getDownloadURL(itemRef);
-      return { url, item: itemRef };
+      const metadata = await getMetadata(itemRef);
+      return { url, item: itemRef, metadata };
     });
     
     // Wait for all promises to resolve
@@ -101,9 +103,7 @@ import {
         photoUrl: `gs://${storageRef.bucket}/${storageRef.fullPath}`, // Przypisz URL zdjęcia z Firebase Storage
       });
   
-      console.log("Photo uploaded and document added to Firestore");
     } catch (error) {
-      console.error("Error saving photo and document:", error);
       throw error;
     }
   };

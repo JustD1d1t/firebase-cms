@@ -8,20 +8,20 @@ const props = defineProps({
         required: true,
     }
 })
+const { removeAttachment } = useAttachments();
 import { useAttachmentsStore } from '~/stores/attachments'
 const attachmentsStore = useAttachmentsStore();
-const { removeAttachment } = attachmentsStore;
-const { removeFileFromStorage } = useFirebase();
+const { removeAttachmentFromStore } = attachmentsStore;
 
-const removeFile = async () => {
-    await removeFileFromStorage(`releases/${auth.currentUser.uid}/${route.params.id}`, props.file.item.name)
-    removeAttachment(props.file)
+const removeFile = async (name) => {    
+    removeAttachment(route.params.id, name)
+    removeAttachmentFromStore(props.file)
 }
 </script>
 <template>
     <div class="flex">
-        <a :href="file.url" target="_blank">{{ props.file.item.name }}</a>
-        <UButton variant="ghost" color="red" @click="removeFile()">
+        <a :href="file.url" target="_blank">{{ props.file.metadata.name }}</a>
+        <UButton variant="ghost" color="red" @click="removeFile(props.file.metadata.name)">
             <nuxt-icon name="trash" />
         </UButton>
     </div>

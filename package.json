@@ -23,8 +23,12 @@
     "@nuxt/ui-pro": "^1.3.1",
     "@pinia/nuxt": "^0.5.1",
     "@tiptap/extension-text-align": "^2.4.0",
+    "@vueuse/core": "^10.11.0",
+    "npm": "^10.8.2",
     "nuxt-icons": "^3.2.1",
     "pinia": "^2.1.7",
+    "vue-draggable-next": "^2.2.1",
+    "vuedraggable": "^4.1.0",
     "yup": "^1.4.0"
   }
 }

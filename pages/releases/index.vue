@@ -1,13 +1,13 @@
 <script setup>
 import { getAuth } from 'firebase/auth';
 const auth = getAuth();
-const { queryDocsByCollection } = useFirebase()
 import { useReleaseStore } from '~/stores/release'
 
 const releaseStore = useReleaseStore();
-const { addReleases } = releaseStore;
+const { addReleasesToStore, deleteReleaseFromStore } = releaseStore;
+const { deleteRelease, getReleases } = useReleases();
 
-const releases = computed(() => releaseStore.getReleases);
+const releases = computed(() => releaseStore.getReleasesFromStore);
 
 
 function clearCodeFromHtmlTags(code) {
@@ -15,23 +15,33 @@ function clearCodeFromHtmlTags(code) {
     tempElement.innerHTML = code;
     return tempElement.textContent || tempElement.innerText || '';
 }
+const remove = async (id) => {
+    try {
+        await deleteRelease(id);
+        deleteReleaseFromStore(id);
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-onMounted(async () => {
-    const response = await queryDocsByCollection(['users', auth.currentUser.uid, 'releases'])
-    addReleases(response)
+const { data, status } = useAsyncData(getReleases);
+
+watch(data, (newData) => {
+    addReleasesToStore(newData.data)
 })
 
 </script>
 
 <template>
-    <UiLoadingspinner v-if="!releases.length" />
-    <UContainer class="flex flex-col items-start h-screen w-full" v-else>
+    <UiLoadingspinner v-if="status === 'pending'" />
+    <UContainer class="flex flex-col items-start  w-full" v-else>
         <UButton color="green" variant="solid" class="mb-6" to="/releases/new">Dodaj nową</UButton>
         <UBlogList v-if="releases.length" orientation="vertical" class="relative group flex flex-col w-full gap-y-6">
             <UBlogPost v-for="release in releases" :key="release.id" :title="release.title"
                 :description="clearCodeFromHtmlTags(release.content)">
                 <template #default>
                     <UButton color="orange" variant="link" :to="`/releases/${release.id}`">Edytuj</UButton>
+                    <UButton color="red" variant="solid" @click="() => remove(release.id)">Usuń</UButton>
                 </template>
             </UBlogPost>
         </UBlogList>

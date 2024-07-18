@@ -1,17 +1,17 @@
 <script setup>
 import { object, string } from 'yup';
 import { getAuth } from 'firebase/auth';
-const auth = getAuth();
-const { saveFile, queryDoc, setDocument, getFilesWithUrl, removeFileFromStorage } = useFirebase();
 const route = useRoute()
 import { useAttachmentsStore } from '~/stores/attachments'
 const router = useRouter();
+const { getRelease, updateRelease } = useReleases();
 
 const attachmentsStore = useAttachmentsStore();
-const { removeAttachments, setAttachments } = attachmentsStore;
+const { getAttachments } = useAttachments();
+const { setAttachmentsToStore } = attachmentsStore;
 const isLoading = ref(false);
 
-const attachments = computed(() => attachmentsStore.getAttachments);
+const attachments = computed(() => attachmentsStore.getAttachmentsFromStore);
 
 const schema = object({
     title: string().required('Required'),
@@ -25,39 +25,32 @@ const state = reactive({
 })
 
 async function onSubmit(event) {
-    await setDocument(['users', auth.currentUser.uid, 'releases', route.params.id], {
-        content: state.content,
-        title: state.title
-    })
-    router.back();
-}
-
-const removeFiles = async () => {
-    const removalPromises = attachments.value.map(att =>
-        removeFileFromStorage(`releases/${auth.currentUser.uid}/${route.params.id}`, att.item.name)
+    await updateRelease(
+        {
+            title: state.title,
+            content: state.content,
+        },
+        route.params.id
     );
-    await Promise.all(removalPromises);
-    removeAttachments();
+    router.back();
 }
 
 const closeModal = () => {
     isOpen.value = false;
 }
 
-onMounted(async () => {
-    isLoading.value = true;
-    const response = await queryDoc(['users', auth.currentUser.uid, 'releases'], route.params.id)
-    state.title = response.title;
-    state.content = response.content;
-    const files = await getFilesWithUrl(`releases/${auth.currentUser.uid}/${route.params.id}`);
-    setAttachments(files)
-    isLoading.value = false;
-})
+const { status } = useAsyncData(async () => {
+    const release = await getRelease(route.params.id);
+    state.title = release.data.title;
+    state.content = release.data.content;
+    const files = await getAttachments(route.params.id);
+    setAttachmentsToStore(files)
+});
 </script>
 
 <template>
-    <UiLoadingspinner v-if="isLoading" />
-    <UContainer class="flex justify-center h-screen w-full" v-else>
+    <UiLoadingspinner v-if="status === 'pending'" />
+    <UContainer class="flex justify-center w-full" v-else>
         <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
             <UFormGroup label="Tytuł" name="title" required>
                 <UInput v-model="state.title" />
@@ -65,7 +58,6 @@ onMounted(async () => {
 
             <h3 v-if="attachments.length">Pliki</h3>
             <div class="flex gap-x-2">
-                <UButton color='red' @click="removeFiles">Usuń pliki</UButton>
                 <UButton color='green' @click="isOpen = true">Dodaj pliki</UButton>
             </div>
             <ReleasesAttachment v-for="file in attachments" :key="file.item.fullPath" :file="file" />
@@ -76,6 +68,8 @@ onMounted(async () => {
                 Submit
             </UButton>
         </UForm>
-        <ReleasesAddAttachmentModal :isOpen="isOpen" :closeModal="closeModal" />
+        <UModal v-model="isOpen">
+            <ReleasesAddAttachmentModal :closeModal="closeModal" />
+        </UModal>
     </UContainer>
 </template>

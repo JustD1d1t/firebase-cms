@@ -1,5 +1,5 @@
 <template>
-    <UContainer class="flex flex-col items-center h-screen w-full justify-center">
+    <UContainer class="flex flex-col items-center  w-full justify-center">
         <span class="loader"></span>
     </UContainer>
 </template>

@@ -23,7 +23,7 @@ function onSubmit(data) {
 <!-- eslint-disable vue/multiline-html-element-content-newline -->
 <!-- eslint-disable vue/singleline-html-element-content-newline -->
 <template>
-    <UContainer class="flex items-center justify-center h-screen">
+    <UContainer class="flex items-center justify-center ">
         <UCard class="max-w-sm w-full">
             <UAuthForm :fields="fields" :validate="validate" title="Join us!" align="top" icon="i-heroicons-lock-closed"
                 :ui="{ base: 'text-center', footer: 'text-center' }" @submit="onSubmit">
